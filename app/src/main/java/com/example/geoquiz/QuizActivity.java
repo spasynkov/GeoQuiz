@@ -30,22 +30,16 @@ public class QuizActivity extends AppCompatActivity {
 		setContentView(R.layout.activity_quiz);
 
 		mQuestionTextView = findViewById(R.id.question_text_view);
+		mQuestionTextView.setOnClickListener((view) -> incrementCounterAndUpdateQuestion());
 
 		mTrueButton = findViewById(R.id.true_button);
-		mTrueButton.setOnClickListener((view) -> {
-			checkAnswer(true);
-		});
+		mTrueButton.setOnClickListener((view) -> checkAnswer(true));
 
 		mFalseButton = findViewById(R.id.false_button);
-		mFalseButton.setOnClickListener((view) -> {
-			checkAnswer(false);
-		});
+		mFalseButton.setOnClickListener((view) -> checkAnswer(false));
 
 		mNextButton = findViewById(R.id.next_button);
-		mNextButton.setOnClickListener((view) -> {
-			mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
-			updateQuestion();
-		});
+		mNextButton.setOnClickListener((view) -> incrementCounterAndUpdateQuestion());
 
 		updateQuestion();
 	}
@@ -53,6 +47,11 @@ public class QuizActivity extends AppCompatActivity {
 	private void updateQuestion() {
 		int questionId = mQuestionBank[mCurrentIndex].getTextResId();
 		mQuestionTextView.setText(questionId);
+	}
+
+	private void incrementCounterAndUpdateQuestion() {
+		mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+		updateQuestion();
 	}
 
 	private void checkAnswer(boolean userPressedTrue) {
