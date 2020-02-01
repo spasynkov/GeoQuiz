@@ -1,6 +1,7 @@
 package com.example.geoquiz;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,10 +25,19 @@ public class QuizActivity extends AppCompatActivity {
 
 	private int mCurrentIndex = 0;
 
+	private static final String TAG = QuizActivity.class.getSimpleName();
+	private static final String KEY_INDEX = "index";
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_quiz);
+
+		Log.d(TAG, "onCreate(Bundle) called");
+
+		if (savedInstanceState != null) {
+			mCurrentIndex = savedInstanceState.getInt(KEY_INDEX);
+		} else Log.d(TAG, "savedInstanceState == null");
 
 		mQuestionTextView = findViewById(R.id.question_text_view);
 
@@ -48,6 +58,55 @@ public class QuizActivity extends AppCompatActivity {
 		});
 
 		updateQuestion();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.d(TAG, "onDestroy() called");
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.d(TAG, "onStart() called");
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.d(TAG, "onStop() called");
+	}
+
+	/**
+	 * Dispatch onResume() to fragments.  Note that for better inter-operation
+	 * with older versions of the platform, at the point of this call the
+	 * fragments attached to the activity are <em>not</em> resumed.  This means
+	 * that in some cases the previous state may still be saved, not allowing
+	 * fragment transactions that modify the state.  To correctly interact
+	 * with fragments in their proper state, you should instead override
+	 * {@link #onResumeFragments()}.
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.d(TAG, "onResume() called");
+	}
+
+	/**
+	 * Dispatch onPause() to fragments.
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.d(TAG, "onPause() called");
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(KEY_INDEX, mCurrentIndex);
+		Log.d(TAG, "onSaveInstanceState()");
 	}
 
 	private void updateQuestion() {
