@@ -46,11 +46,13 @@ public class QuizActivity extends AppCompatActivity {
 
 		mTrueButton = findViewById(R.id.true_button);
 		mTrueButton.setOnClickListener((view) -> {
+			disableButtons();
 			checkAnswer(true);
 		});
 
 		mFalseButton = findViewById(R.id.false_button);
 		mFalseButton.setOnClickListener((view) -> {
+			disableButtons();
 			checkAnswer(false);
 		});
 
@@ -58,6 +60,7 @@ public class QuizActivity extends AppCompatActivity {
 		mNextButton.setOnClickListener((view) -> {
 			mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
 			updateQuestion();
+			enableButtons();
 		});
 
 		updateQuestion();
@@ -142,5 +145,15 @@ public class QuizActivity extends AppCompatActivity {
 					Toast.LENGTH_SHORT)
 					.show();
 		}
+	}
+
+	private void disableButtons() {
+		mTrueButton.setEnabled(false);
+		mFalseButton.setEnabled(false);
+	}
+
+	private void enableButtons() {
+		mTrueButton.setEnabled(true);
+		mFalseButton.setEnabled(true);
 	}
 }
