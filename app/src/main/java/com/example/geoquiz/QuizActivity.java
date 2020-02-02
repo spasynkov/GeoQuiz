@@ -24,9 +24,11 @@ public class QuizActivity extends AppCompatActivity {
 	};
 
 	private int mCurrentIndex = 0;
+	private static final String KEY_ANSWERS = "answers";
 
 	private static final String TAG = QuizActivity.class.getSimpleName();
 	private static final String KEY_INDEX = "index";
+	private int mCorrectAnswersCounter = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +39,7 @@ public class QuizActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			mCurrentIndex = savedInstanceState.getInt(KEY_INDEX);
+			mCorrectAnswersCounter = savedInstanceState.getInt(KEY_ANSWERS);
 		} else Log.d(TAG, "savedInstanceState == null");
 
 		mQuestionTextView = findViewById(R.id.question_text_view);
@@ -106,6 +109,7 @@ public class QuizActivity extends AppCompatActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(KEY_INDEX, mCurrentIndex);
+		outState.putInt(KEY_ANSWERS, mCorrectAnswersCounter);
 		Log.d(TAG, "onSaveInstanceState()");
 	}
 
@@ -119,14 +123,24 @@ public class QuizActivity extends AppCompatActivity {
 
 		int toastToShowId;
 		if (userPressedTrue == answerIsTrue) {
+			mCorrectAnswersCounter++;
 			toastToShowId = R.string.correct_toast;
 		} else {
 			toastToShowId = R.string.incorrect_toast;
 		}
 
-		Toast.makeText(QuizActivity.this,
-				toastToShowId,
-				Toast.LENGTH_SHORT)
-				.show();
+		if (mCurrentIndex != 0 && mCurrentIndex % (mQuestionBank.length - 1) == 0) {
+			double result = (((double) mCorrectAnswersCounter) / mQuestionBank.length) * 100;
+			mCorrectAnswersCounter = 0;
+			Toast.makeText(QuizActivity.this,
+					String.format(getString(R.string.result) + "%.2f%%", result),
+					Toast.LENGTH_LONG)
+					.show();
+		} else {
+			Toast.makeText(QuizActivity.this,
+					toastToShowId,
+					Toast.LENGTH_SHORT)
+					.show();
+		}
 	}
 }
