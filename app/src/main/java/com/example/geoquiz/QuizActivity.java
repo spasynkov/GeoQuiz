@@ -10,10 +10,11 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.HashMap;
+
 public class QuizActivity extends AppCompatActivity {
 	private Button mTrueButton;
 	private Button mFalseButton;
-	private static final int REQUEST_CODE_CHEAT = 0;
 	private Button mNextButton;
 	private TextView mQuestionTextView;
 	private Button mCheatButton;
@@ -31,7 +32,13 @@ public class QuizActivity extends AppCompatActivity {
 
 	private static final String TAG = QuizActivity.class.getSimpleName();
 	private static final String KEY_INDEX = "index";
+	private static final String KEY_CHEATED = "cheated";
+	private static final String KEY_MAP = "map";
+
+	private static final int REQUEST_CODE_CHEAT = 0;
+
 	private boolean mIsCheated;
+	private HashMap<Integer, Boolean> mQuestionCheatsMap;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +49,12 @@ public class QuizActivity extends AppCompatActivity {
 
 		if (savedInstanceState != null) {
 			mCurrentIndex = savedInstanceState.getInt(KEY_INDEX);
-		} else Log.d(TAG, "savedInstanceState == null");
+			mQuestionCheatsMap = (HashMap<Integer, Boolean>) savedInstanceState.get(KEY_MAP);
+			getIsCheatedFromMapOrElse(savedInstanceState.getBoolean(KEY_CHEATED));
+		} else {
+			mQuestionCheatsMap = new HashMap<>();
+			Log.d(TAG, "savedInstanceState == null");
+		}
 
 		mQuestionTextView = findViewById(R.id.question_text_view);
 
@@ -67,10 +79,17 @@ public class QuizActivity extends AppCompatActivity {
 		mNextButton.setOnClickListener((view) -> {
 			mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
 			updateQuestion();
-			mIsCheated = false;
+			getIsCheatedFromMapOrElse(false);
 		});
 
 		updateQuestion();
+	}
+
+	private void getIsCheatedFromMapOrElse(boolean defaultValue) {
+		Boolean resultFromMap = mQuestionCheatsMap.get(mCurrentIndex);
+		mIsCheated = resultFromMap != null
+				? resultFromMap
+				: defaultValue;
 	}
 
 	@Override
@@ -119,6 +138,8 @@ public class QuizActivity extends AppCompatActivity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt(KEY_INDEX, mCurrentIndex);
+		outState.putBoolean(KEY_CHEATED, mIsCheated);
+		outState.putSerializable(KEY_MAP, mQuestionCheatsMap);
 		Log.d(TAG, "onSaveInstanceState()");
 	}
 
@@ -143,6 +164,7 @@ public class QuizActivity extends AppCompatActivity {
 	private void proceedCheatResult(int resultCode, Intent data) {
 		if (resultCode == RESULT_OK && CheatActivity.wasAnswerShown(data)) {
 			mIsCheated = true;
+			mQuestionCheatsMap.put(mCurrentIndex, mIsCheated);
 		}
 	}
 
