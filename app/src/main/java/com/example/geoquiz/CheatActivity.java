@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewAnimationUtils;
@@ -19,6 +20,7 @@ public class CheatActivity extends AppCompatActivity {
 
 	private Button mButton;
 	private TextView mTextView;
+	private TextView mAndroidVersion;
 	private boolean mAnswerIsTrue;
 
 	public static Intent newIntent(Context packageContext, boolean isAnswerTrue) {
@@ -44,7 +46,7 @@ public class CheatActivity extends AppCompatActivity {
 			mTextView.setText(mAnswerIsTrue ? R.string.true_button : R.string.false_button);
 			setAnswerShownResult(true);
 
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+			if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 				int cx = mButton.getWidth() / 2;
 				int cy = mButton.getHeight() / 2;
 				float radius = mButton.getWidth();
@@ -64,6 +66,9 @@ public class CheatActivity extends AppCompatActivity {
 				mButton.setVisibility(View.INVISIBLE);
 			}
 		});
+
+		mAndroidVersion = findViewById(R.id.android_version);
+		mAndroidVersion.setText(getString(R.string.api_level, Build.VERSION.SDK_INT));
 	}
 
 	private void setAnswerShownResult(boolean isAnswerShown) {
