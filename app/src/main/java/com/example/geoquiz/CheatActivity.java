@@ -17,8 +17,11 @@ public class CheatActivity extends AppCompatActivity {
 	private static final String EXTRA_ANSWER_IS_TRUE = "com.example.answer_is_true";
 	private static final String EXTRA_ANSWER_SHOWN = "com.example.answer_shown";
 
+	private static int sCheatCounter = 3;
+
 	private Button mButton;
 	private TextView mTextView;
+	private TextView mCheatCounterView;
 	private boolean mAnswerIsTrue;
 
 	public static Intent newIntent(Context packageContext, boolean isAnswerTrue) {
@@ -40,30 +43,48 @@ public class CheatActivity extends AppCompatActivity {
 		mButton = findViewById(R.id.show_answer_button);
 		mTextView = findViewById(R.id.answer_text_view);
 
-		mButton.setOnClickListener((view) -> {
-			mTextView.setText(mAnswerIsTrue ? R.string.true_button : R.string.false_button);
-			setAnswerShownResult(true);
+		if (sCheatCounter > 0) {
+			mButton.setOnClickListener((view) -> {
+				mTextView.setText(mAnswerIsTrue ? R.string.true_button : R.string.false_button);
+				setAnswerShownResult(true);
 
-			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-				int cx = mButton.getWidth() / 2;
-				int cy = mButton.getHeight() / 2;
-				float radius = mButton.getWidth();
-				Animator anim = null;
+				if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+					int cx = mButton.getWidth() / 2;
+					int cy = mButton.getHeight() / 2;
+					float radius = mButton.getWidth();
+					Animator anim = null;
 
-				anim = ViewAnimationUtils
-						.createCircularReveal(mButton, cx, cy, radius, 0);
-				anim.addListener(new AnimatorListenerAdapter() {
-					@Override
-					public void onAnimationEnd(Animator animation) {
-						super.onAnimationEnd(animation);
-						mButton.setVisibility(View.INVISIBLE);
-					}
-				});
-				anim.start();
-			} else {
-				mButton.setVisibility(View.INVISIBLE);
-			}
-		});
+					anim = ViewAnimationUtils
+							.createCircularReveal(mButton, cx, cy, radius, 0);
+					anim.addListener(new AnimatorListenerAdapter() {
+						@Override
+						public void onAnimationEnd(Animator animation) {
+							super.onAnimationEnd(animation);
+							mButton.setVisibility(View.INVISIBLE);
+						}
+					});
+					anim.start();
+				} else {
+					mButton.setVisibility(View.INVISIBLE);
+				}
+
+				sCheatCounter--;
+				showCheatsLeft();
+			});
+		} else {
+			mButton.setEnabled(false);
+		}
+
+		mCheatCounterView = findViewById(R.id.cheats_counter);
+		showCheatsLeft();
+	}
+
+	private void showCheatsLeft() {
+		if (sCheatCounter > 0) {
+			mCheatCounterView.setText(getString(R.string.cheats_left_text, sCheatCounter));
+		} else {
+			mCheatCounterView.setText(R.string.no_cheats_left_text);
+		}
 	}
 
 	private void setAnswerShownResult(boolean isAnswerShown) {
